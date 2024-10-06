@@ -3,7 +3,8 @@ package router
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/ko-ding-in/go-boilerplate/internal/appctx"
-	"net/http"
+	"github.com/ko-ding-in/go-boilerplate/internal/controller"
+	"github.com/ko-ding-in/go-boilerplate/internal/controller/contract"
 )
 
 type router struct {
@@ -15,8 +16,28 @@ func NewRouter(cfg *appctx.Config, fiber *fiber.App) Router {
 	return &router{cfg: cfg, fiber: fiber}
 }
 
+func (rtr *router) handle(hfn httpHandleFunc, ctrl contract.Controller) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		resp := hfn(c, ctrl, rtr.cfg)
+		return rtr.response(c, resp)
+	}
+}
+
+func (rtr *router) response(c *fiber.Ctx, resp appctx.Response) error {
+	c.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSON)
+	return c.Status(resp.StatusCode).Send(resp.Byte())
+}
+
 func (rtr *router) Route() {
-	rtr.fiber.Get("/ruok", func(c *fiber.Ctx) error {
-		return c.Status(http.StatusOK).JSON(map[string]string{"message": "Perfectly fine"})
+	// controllers
+	controllers := controller.NewController(&contract.Dependency{
+		Core: contract.Core{
+			Cfg: rtr.cfg,
+		},
 	})
+
+	rtr.fiber.Get("/ruok", rtr.handle(
+		HttpRequest,
+		controllers.HealthCheck.Liveness,
+	))
 }
