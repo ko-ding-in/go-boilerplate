@@ -19,7 +19,8 @@ var (
 
 type (
 	Config struct {
-		App App `yaml:"app" json:"app"`
+		App    App    `yaml:"app" json:"app"`
+		Logger Logger `yaml:"log" json:"log"`
 	}
 
 	App struct {
@@ -30,6 +31,10 @@ type (
 		Env          string        `yaml:"env" json:"env"`
 		ReadTimeout  time.Duration `yaml:"read_timeout" json:"read_timeout"`
 		WriteTimeout time.Duration `yaml:"write_timeout" json:"write_timeout"`
+	}
+
+	Logger struct {
+		Level string `yaml:"level" json:"level"`
 	}
 )
 

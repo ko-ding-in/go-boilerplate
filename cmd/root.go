@@ -3,8 +3,8 @@ package cmd
 import (
 	"context"
 	"github.com/ko-ding-in/go-boilerplate/cmd/http"
+	"github.com/ko-ding-in/go-boilerplate/pkg/logger"
 	"github.com/spf13/cobra"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -13,6 +13,7 @@ import (
 func Run() {
 	rootCmd := &cobra.Command{}
 	ctx, cancel := context.WithCancel(context.Background())
+	logger.SetJSONFormatter()
 
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
@@ -31,6 +32,6 @@ func Run() {
 
 	rootCmd.AddCommand(httpCmd)
 	if err := rootCmd.Execute(); err != nil {
-		log.Fatal(err)
+		logger.Fatal(err)
 	}
 }

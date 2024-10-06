@@ -2,18 +2,17 @@ package http
 
 import (
 	"context"
-	"fmt"
 	"github.com/ko-ding-in/go-boilerplate/internal/server"
-	"log"
+	"github.com/ko-ding-in/go-boilerplate/pkg/logger"
 )
 
 func Start(ctx context.Context) {
 	httpServer := server.NewHttpServer()
 	defer httpServer.Done()
 
-	log.Println(fmt.Sprintf("starting %s services... %d", httpServer.Config().App.Name, httpServer.Config().App.Port))
+	logger.Info(logger.MessageFormat("starting %s services... %d", httpServer.Config().App.Name, httpServer.Config().App.Port))
 
 	if err := httpServer.Run(ctx); err != nil {
-		log.Fatal(fmt.Sprintf("http httpServer start got error: %v", err))
+		logger.Fatal(logger.MessageFormat("http httpServer start got error: %v", err))
 	}
 }

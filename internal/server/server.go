@@ -7,39 +7,43 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/ko-ding-in/go-boilerplate/internal/appctx"
 	"github.com/ko-ding-in/go-boilerplate/internal/router"
-	"log"
+	"github.com/ko-ding-in/go-boilerplate/pkg/logger"
 	"net/http"
 	"time"
 )
 
 type httpServer struct {
 	config *appctx.Config
+	app    *fiber.App
 	router router.Router
 }
 
 func NewHttpServer() Server {
+	config := appctx.NewConfig()
+
+	fiberConfig := fiber.Config{
+		AppName:      config.App.Name,
+		ReadTimeout:  config.App.ReadTimeout,
+		WriteTimeout: config.App.WriteTimeout,
+	}
+
+	app := fiber.New(fiberConfig)
+
 	return &httpServer{
-		config: appctx.NewConfig(),
+		config: config,
+		app:    app,
+		router: router.NewRouter(config, app),
 	}
 }
 
 func (s *httpServer) Run(ctx context.Context) error {
 	var err error
 
-	fiberConfig := fiber.Config{
-		AppName:      s.config.App.Name,
-		ReadTimeout:  s.config.App.ReadTimeout,
-		WriteTimeout: s.config.App.WriteTimeout,
-	}
-
-	app := fiber.New(fiberConfig)
-
 	go func() {
-		router.NewRouter(s.config, app).
-			Route()
-		err = app.Listen(fmt.Sprintf("0.0.0.0:%d", s.config.App.Port))
+		s.router.Route()
+		err = s.app.Listen(fmt.Sprintf("0.0.0.0:%d", s.config.App.Port))
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Fatal("http server error: ", err)
+			logger.Fatal(logger.MessageFormat("http server error: %v", err))
 		}
 	}()
 
@@ -48,12 +52,12 @@ func (s *httpServer) Run(ctx context.Context) error {
 	ctxShutDown, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err = app.ShutdownWithContext(ctxShutDown)
+	err = s.app.ShutdownWithContext(ctxShutDown)
 	if err != nil {
-		log.Fatal("http server shutdown got error: ", err)
+		logger.Fatal(logger.MessageFormat("http server shutdown got error: ", err))
 	}
 
-	log.Println("server exited properly")
+	logger.Info("server exited properly")
 
 	if errors.Is(err, http.ErrServerClosed) {
 		err = nil
@@ -63,7 +67,7 @@ func (s *httpServer) Run(ctx context.Context) error {
 }
 
 func (s *httpServer) Done() {
-	log.Println("service has stopped")
+	logger.Info("service has stopped")
 }
 
 func (s *httpServer) Config() *appctx.Config {

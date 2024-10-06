@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/ko-ding-in/go-boilerplate/internal/appctx"
+	"github.com/ko-ding-in/go-boilerplate/internal/bootstrap"
 	"github.com/ko-ding-in/go-boilerplate/internal/controller"
 	"github.com/ko-ding-in/go-boilerplate/internal/controller/contract"
 )
@@ -13,6 +14,7 @@ type router struct {
 }
 
 func NewRouter(cfg *appctx.Config, fiber *fiber.App) Router {
+	bootstrap.RegistryLogger(cfg)
 	return &router{cfg: cfg, fiber: fiber}
 }
 

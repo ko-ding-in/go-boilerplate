@@ -6,3 +6,6 @@ app:
   env: "${APP_ENV}"
   read_timeout: "${APP_READ_TIMEOUT_SECOND}"
   write_timeout: "${APP_WRITE_TIMEOUT_SECOND}"
+
+log:
+  level: "${LOG_LEVEL}"
