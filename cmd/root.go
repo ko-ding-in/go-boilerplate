@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"github.com/ko-ding-in/go-boilerplate/cmd/http"
 	"github.com/spf13/cobra"
 	"log"
 	"os"
@@ -9,9 +10,9 @@ import (
 	"syscall"
 )
 
-func Start() {
+func Run() {
 	rootCmd := &cobra.Command{}
-	_, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(context.Background())
 
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
@@ -24,7 +25,7 @@ func Start() {
 		Use:   "http",
 		Short: "Start HTTP server",
 		Run: func(cmd *cobra.Command, args []string) {
-			log.Println("Starting HTTP server")
+			http.Start(ctx)
 		},
 	}
 
