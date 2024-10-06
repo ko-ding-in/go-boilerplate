@@ -1,0 +1,8 @@
+app:
+  name: "${APP_NAME}"
+  port: ${APP_PORT}
+  debug: ${APP_DEBUG}
+  timezone: "${APP_TIMEZONE}"
+  env: "${APP_ENV}"
+  read_timeout: "${APP_READ_TIMEOUT_SECOND}"
+  write_timeout: "${APP_WRITE_TIMEOUT_SECOND}"

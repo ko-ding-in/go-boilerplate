@@ -4,3 +4,4 @@ kodingin-boilerplate
 vendor
 .vscode/
 go.sum
+config/app.yaml

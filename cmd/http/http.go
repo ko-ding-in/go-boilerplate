@@ -11,7 +11,7 @@ func Start(ctx context.Context) {
 	httpServer := server.NewHttpServer()
 	defer httpServer.Done()
 
-	log.Println(fmt.Sprintf("starting %s services... %d", "kodingin-boilerplate", 9990))
+	log.Println(fmt.Sprintf("starting %s services... %d", httpServer.Config().App.Name, httpServer.Config().App.Port))
 
 	if err := httpServer.Run(ctx); err != nil {
 		log.Fatal(fmt.Sprintf("http httpServer start got error: %v", err))
