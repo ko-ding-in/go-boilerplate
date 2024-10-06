@@ -1,5 +1,7 @@
 package main
 
-func main() {
+import "github.com/ko-ding-in/go-boilerplate/cmd"
 
+func main() {
+	cmd.Start()
 }

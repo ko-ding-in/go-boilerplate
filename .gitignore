@@ -3,3 +3,4 @@ kodingin-boilerplate
 .DS_Store
 vendor
 .vscode/
+go.sum
