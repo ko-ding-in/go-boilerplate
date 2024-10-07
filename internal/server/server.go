@@ -54,7 +54,7 @@ func (s *httpServer) Run(ctx context.Context) error {
 
 	err = s.app.ShutdownWithContext(ctxShutDown)
 	if err != nil {
-		logger.Fatal(logger.MessageFormat("http server shutdown got error: ", err))
+		logger.Fatal(logger.MessageFormat("http server shutdown got error: %v", err))
 	}
 
 	logger.Info("server exited properly")

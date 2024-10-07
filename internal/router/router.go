@@ -6,7 +6,11 @@ import (
 	"github.com/ko-ding-in/go-boilerplate/internal/bootstrap"
 	"github.com/ko-ding-in/go-boilerplate/internal/controller"
 	"github.com/ko-ding-in/go-boilerplate/internal/controller/contract"
+	"github.com/ko-ding-in/go-boilerplate/internal/dependencies"
 	"github.com/ko-ding-in/go-boilerplate/internal/middleware"
+	"github.com/ko-ding-in/go-boilerplate/internal/providers"
+	"github.com/ko-ding-in/go-boilerplate/internal/repositories"
+	"github.com/ko-ding-in/go-boilerplate/internal/services"
 	"github.com/ko-ding-in/go-boilerplate/pkg/logger"
 	"net/http"
 	"runtime/debug"
@@ -89,10 +93,19 @@ func (rtr *router) Route() {
 		middleware.Injector,
 	))
 
+	dep := dependencies.NewDependency(rtr.cfg)
+	repo := repositories.NewRepository(dep)
+	provider := providers.NewProvider(rtr.cfg)
+	svcs := services.NewService(&services.Dependency{
+		Repository: repo,
+		Provider:   provider,
+	})
+
 	// controllers
 	controllers := controller.NewController(&contract.Dependency{
 		Core: contract.Core{
-			Cfg: rtr.cfg,
+			Cfg:      rtr.cfg,
+			Services: svcs,
 		},
 	})
 
