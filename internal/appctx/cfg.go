@@ -3,7 +3,9 @@ package appctx
 import (
 	"fmt"
 	"github.com/ko-ding-in/go-boilerplate/pkg/file"
+	"gopkg.in/yaml.v3"
 	"log"
+	"os"
 	"sync"
 	"time"
 )
@@ -58,7 +60,11 @@ func readConfig(configFile string, configPaths ...string) (*Config, error) {
 
 	for _, path := range configPaths {
 		cfgPath := fmt.Sprint(path, configFile)
-		if err := file.ReadFromYAML(cfgPath, &cfg); err != nil {
+		if err := file.ReadFromYAML(cfgPath, &cfg, func(s string) ([]byte, error) {
+			return os.ReadFile(path)
+		}, func(bytes []byte, a any) error {
+			return yaml.Unmarshal(bytes, a)
+		}); err != nil {
 			errs = append(errs, fmt.Errorf("file %s error %s", cfgPath, err.Error()))
 			continue
 		}

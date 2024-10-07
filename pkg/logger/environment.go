@@ -12,6 +12,7 @@ var envs = map[string]string{
 	"dev":         "development",
 	"prd":         "production",
 	"local":       "local",
+	"test":        "test",
 	"green":       "green",
 	"blue":        "blue",
 }

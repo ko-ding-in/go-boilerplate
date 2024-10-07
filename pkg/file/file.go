@@ -1,14 +1,12 @@
 package file
 
-import (
-	"gopkg.in/yaml.v3"
-	"os"
-)
+type ReadFileFunc func(string) ([]byte, error)
+type UnmarshalFunc func([]byte, any) error
 
-func ReadFromYAML(path string, target any) error {
-	yf, err := os.ReadFile(path)
+func ReadFromYAML(path string, target any, readFile ReadFileFunc, yamlUnmarshal UnmarshalFunc) error {
+	yf, err := readFile(path)
 	if err != nil {
 		return err
 	}
-	return yaml.Unmarshal(yf, target)
+	return yamlUnmarshal(yf, target)
 }

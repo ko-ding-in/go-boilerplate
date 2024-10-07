@@ -19,7 +19,7 @@ func ToString(value interface{}) string {
 	case int32:
 		return strconv.FormatInt(int64(value), 10)
 	case int64:
-		return strconv.FormatInt(int64(value), 10)
+		return strconv.FormatInt(value, 10)
 	case uint:
 		return strconv.FormatUint(uint64(value), 10)
 	case uint8:
@@ -29,9 +29,9 @@ func ToString(value interface{}) string {
 	case uint32:
 		return strconv.FormatUint(uint64(value), 10)
 	case uint64:
-		return strconv.FormatUint(uint64(value), 10)
+		return strconv.FormatUint(value, 10)
 	case float32:
-		return strconv.FormatFloat(float64(value), 'g', -1, 64)
+		return strconv.FormatFloat(float64(value), 'g', -1, 32)
 	case float64:
 		return strconv.FormatFloat(float64(value), 'g', -1, 64)
 	case bool:
@@ -53,16 +53,20 @@ func StringJoin(elems []string, sep, lastSep string) string {
 		n += len(elems[i])
 	}
 
+	// one, two - one and two
+
 	var b strings.Builder
 	b.Grow(n)
 	b.WriteString(elems[0])
-	for _, s := range elems[1:] {
-		b.WriteString(sep)
-		b.WriteString(s)
-	}
+	for i := 1; i < len(elems); i++ {
+		if i == len(elems)-1 && lastSep != "" {
+			b.WriteString(lastSep)
+			b.WriteString(elems[i])
+			continue
+		}
 
-	if lastSep != "" {
-		b.WriteString(lastSep)
+		b.WriteString(sep)
+		b.WriteString(elems[i])
 	}
 
 	return b.String()
@@ -76,7 +80,7 @@ func SubstringAfter(src string, prefix string) string {
 	}
 	adjustedPos := pos + len(prefix)
 	if adjustedPos >= len(src) {
-		return src
+		return ""
 	}
 	return src[adjustedPos:]
 }
