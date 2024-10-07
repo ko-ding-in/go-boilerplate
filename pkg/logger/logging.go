@@ -4,7 +4,8 @@ package logger
 import (
 	"context"
 	"fmt"
-	"github.com/ko-ding-in/go-boilerplate/pkg/util"
+	"github.com/ko-ding-in/go-boilerplate/internal/consts"
+	"time"
 
 	"github.com/sirupsen/logrus"
 )
@@ -129,55 +130,36 @@ func Trace(arg interface{}, fl ...Field) {
 // InfoWithContext log info with context
 func InfoWithContext(ctx context.Context, arg interface{}, fl ...Field) {
 	logrus.WithFields(
-		extractContext(ctx.Value("access"), extract(fl...)),
+		fieldFromContext(ctx, extract(fl...)),
 	).WithContext(ctx).Info(arg)
 }
 
 // WarnWithContext log warn with context
 func WarnWithContext(ctx context.Context, arg interface{}, fl ...Field) {
 	logrus.WithFields(
-		extractContext(ctx.Value("access"), extract(fl...)),
+		fieldFromContext(ctx, extract(fl...)),
 	).WithContext(ctx).Warn(arg)
 }
 
 // ErrorWithContext log error with context
 func ErrorWithContext(ctx context.Context, arg interface{}, fl ...Field) {
 	logrus.WithFields(
-		extractContext(ctx.Value("access"), extract(fl...)),
+		fieldFromContext(ctx, extract(fl...)),
 	).WithContext(ctx).Error(arg)
 }
 
 // DebugWithContext log debug with context
 func DebugWithContext(ctx context.Context, arg interface{}, fl ...Field) {
 	logrus.WithFields(
-		extractContext(ctx.Value("access"), extract(fl...)),
+		fieldFromContext(ctx, extract(fl...)),
 	).WithContext(ctx).Debug(arg)
 }
 
 // TraceWithContext log trace with context
 func TraceWithContext(ctx context.Context, arg interface{}, fl ...Field) {
 	logrus.WithFields(
-		extractContext(ctx.Value("access"), extract(fl...)),
+		fieldFromContext(ctx, extract(fl...)),
 	).WithContext(ctx).Trace(arg)
-}
-
-func extractContext(i interface{}, logField map[string]interface{}) map[string]interface{} {
-
-	if Environment(conf.Environment) != "" {
-		logField[EnvironmentKey] = Environment(conf.Environment)
-	}
-
-	if conf.ServiceName != "" {
-		logField[ServiceKey] = conf.ServiceName
-	}
-
-	if util.IsSameType(i, logField) {
-		x := i.(map[string]interface{})
-		for k, v := range x {
-			logField[k] = v
-		}
-	}
-	return logField
 }
 
 func addField(f logrus.Fields) logrus.Fields {
@@ -192,4 +174,24 @@ func addField(f logrus.Fields) logrus.Fields {
 		f[ServiceKey] = conf.ServiceName
 	}
 	return f
+}
+
+func fieldFromContext(ctx context.Context, logField map[string]any) map[string]any {
+	if logField == nil {
+		logField = logrus.Fields{}
+	}
+
+	t, tOk := ctx.Value(consts.ContextKeyStartTime).(time.Time)
+	if tOk {
+		logField["process_time"] = time.Since(t).Seconds()
+		logField["process_time_unit"] = "second"
+		logField[StartTimeField] = t
+	}
+
+	logField[RequestIpField] = ctx.Value(consts.ContextKeyIP)
+	logField[RequestPathField] = ctx.Value(consts.ContextKeyPath)
+	logField[RequestMethodField] = ctx.Value(consts.ContextKeyMethod)
+	logField[EnvironmentKey] = Environment(conf.Environment)
+
+	return logField
 }

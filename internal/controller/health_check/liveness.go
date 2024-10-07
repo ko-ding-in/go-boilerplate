@@ -27,7 +27,9 @@ func (ctrl *livenessController) Serve(data appctx.Data) appctx.Response {
 		)
 		ctx = data.Ctx.UserContext()
 	)
+
 	logger.InfoWithContext(ctx, "Liveness Check", lf...)
+
 	return *appctx.NewResponse().
 		WithMessage(LivenessMessage)
 }

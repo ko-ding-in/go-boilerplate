@@ -23,4 +23,14 @@ const (
 
 	LogDriverLoki    = "loki"
 	LogDriverGraylog = "graylog"
+
+	StartTimeKey   = "start-time"
+	StartTimeField = "start_time"
+
+	RequestIpKey       = `request-ip`
+	RequestIpField     = `request_ip`
+	RequestMethodKey   = `request-method`
+	RequestMethodField = `request_method`
+	RequestPathKey     = `request-path`
+	RequestPathField   = `request_path`
 )

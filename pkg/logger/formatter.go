@@ -119,7 +119,7 @@ func getCaller() *runtime.Frame {
 		minimumCallerDepth = knownLogrusFrames
 	})
 
-	lpkg := `gitlab.com/djelasid/taco/pkg/logger`
+	lpkg := "github.com/ko-ding-in/go-boilerplate/pkg/logger"
 
 	// Restrict the lookback frames to avoid runaway lookups
 	pcs := make([]uintptr, maximumCallerDepth)
