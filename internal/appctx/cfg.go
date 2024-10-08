@@ -19,6 +19,12 @@ var (
 	_cfg    *Config
 )
 
+// FileReader is a function type for reading files
+type FileReader func(string) ([]byte, error)
+
+// YAMLUnmarshaler is a function type for unmarshaling YAML content
+type YAMLUnmarshaler func([]byte, any) error
+
 type (
 	Config struct {
 		App    App    `yaml:"app" json:"app"`
@@ -43,7 +49,7 @@ type (
 func NewConfig() *Config {
 	cfgPath := []string{configPath}
 	cfgOnce.Do(func() {
-		c, err := readConfig("app.yaml", cfgPath...)
+		c, err := readConfig("app.yaml", readFileFunc, yamlReadFunc, cfgPath...)
 		if err != nil {
 			log.Fatal("failed to load config")
 		}
@@ -52,7 +58,7 @@ func NewConfig() *Config {
 	return _cfg
 }
 
-func readConfig(configFile string, configPaths ...string) (*Config, error) {
+func readConfig(configFile string, fileReader file.ReadFileFunc, yamlReader file.YAMLUnmarshalFunc, configPaths ...string) (*Config, error) {
 	var (
 		cfg  *Config
 		errs []error
@@ -60,11 +66,7 @@ func readConfig(configFile string, configPaths ...string) (*Config, error) {
 
 	for _, path := range configPaths {
 		cfgPath := fmt.Sprint(path, configFile)
-		if err := file.ReadFromYAML(cfgPath, &cfg, func(s string) ([]byte, error) {
-			return os.ReadFile(path)
-		}, func(bytes []byte, a any) error {
-			return yaml.Unmarshal(bytes, a)
-		}); err != nil {
+		if err := file.ReadFromYAML(cfgPath, &cfg, fileReader, yamlReader); err != nil {
 			errs = append(errs, fmt.Errorf("file %s error %s", cfgPath, err.Error()))
 			continue
 		}
@@ -76,4 +78,12 @@ func readConfig(configFile string, configPaths ...string) (*Config, error) {
 	}
 
 	return cfg, nil
+}
+
+func readFileFunc(s string) ([]byte, error) {
+	return os.ReadFile(s)
+}
+
+func yamlReadFunc(bytes []byte, a any) error {
+	return yaml.Unmarshal(bytes, a)
 }

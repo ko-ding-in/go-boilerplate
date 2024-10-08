@@ -1,9 +1,9 @@
 package file
 
 type ReadFileFunc func(string) ([]byte, error)
-type UnmarshalFunc func([]byte, any) error
+type YAMLUnmarshalFunc func([]byte, any) error
 
-func ReadFromYAML(path string, target any, readFile ReadFileFunc, yamlUnmarshal UnmarshalFunc) error {
+func ReadFromYAML(path string, target any, readFile ReadFileFunc, yamlUnmarshal YAMLUnmarshalFunc) error {
 	yf, err := readFile(path)
 	if err != nil {
 		return err

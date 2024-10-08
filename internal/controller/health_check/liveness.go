@@ -12,7 +12,7 @@ func newLivenessController() contract.Controller {
 	return &livenessController{}
 }
 
-func (ctrl *livenessController) eventName() string {
+func (ctrl *livenessController) EventName() string {
 	return "controller.liveness"
 }
 
@@ -23,7 +23,7 @@ func (ctrl *livenessController) Serve(data appctx.Data) appctx.Response {
 
 	var (
 		lf = logger.NewFields(
-			logger.EventName(ctrl.eventName()),
+			logger.EventName(ctrl.EventName()),
 		)
 		ctx = data.Ctx.UserContext()
 	)

@@ -7,14 +7,14 @@ import (
 )
 
 // Mock ReadFileFunc for testing
-func mockReadFile(content []byte, err error) ReadFileFunc {
+func MockReadFile(content []byte, err error) ReadFileFunc {
 	return func(path string) ([]byte, error) {
 		return content, err
 	}
 }
 
-// Mock UnmarshalFunc for testing
-func mockUnmarshal(content []byte, err error) UnmarshalFunc {
+// Mock YAMLUnmarshalFunc for testing
+func MocYAMLUnmarshal(content []byte, err error) YAMLUnmarshalFunc {
 	return func(data []byte, target any) error {
 		return err
 	}
@@ -70,8 +70,8 @@ func TestReadFromYAML(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Call the function under test with mock ReadFileFunc and mock UnmarshalFunc
-			err := ReadFromYAML(tt.path, tt.target, mockReadFile(tt.fileContent, tt.fileErr), mockUnmarshal(tt.fileContent, tt.unmarshalErr))
+			// Call the function under test with mock ReadFileFunc and mock YAMLUnmarshalFunc
+			err := ReadFromYAML(tt.path, tt.target, MockReadFile(tt.fileContent, tt.fileErr), MocYAMLUnmarshal(tt.fileContent, tt.unmarshalErr))
 
 			// Assertions
 			if tt.expectedErr != nil {
